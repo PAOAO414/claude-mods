@@ -1,0 +1,11 @@
+{
+  "name": "claude-mods",
+  "owner": { "name": "PAOAO0414" },
+  "plugins": [
+    {
+      "name": "usage-band",
+      "source": "./usage-band",
+      "description": "在輸入框上方顯示剩餘用量（5 小時／7 天限額）與 context 使用率"
+    }
+  ]
+}
