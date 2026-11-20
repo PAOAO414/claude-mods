@@ -20,13 +20,13 @@ Claude Code 的自製 mod 集合。
 在 Claude Code 的輸入框：
 
 ```
-/plugin install usage-band --marketplace PAOAO0414/claude-mods
+/plugin install usage-band --marketplace PAOAO414/claude-mods
 ```
 
 從 shell：
 
 ```bash
-claude plugin install usage-band --marketplace PAOAO0414/claude-mods
+claude plugin install usage-band --marketplace PAOAO414/claude-mods
 ```
 
-Desktop App（`/plugin` 不能用時）：點輸入框旁的 + → Plugins → Add marketplace 填 `PAOAO0414/claude-mods` → Add plugin。
+Desktop App（`/plugin` 不能用時）：點輸入框旁的 + → Plugins → Add marketplace 填 `PAOAO414/claude-mods` → Add plugin。
