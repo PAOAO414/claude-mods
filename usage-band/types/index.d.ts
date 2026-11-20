@@ -1,8 +1,18 @@
 export type Limit = { kind: string; percentUsed: number; resetsAt?: string }
-export type Snapshot = { limits: Limit[]; contextPercent?: number }
+export type Snapshot = {
+  limits: Limit[]
+  contextPercent?: number
+  contextTokens?: number
+  contextWindow?: number
+  usd?: number
+}
 
 declare module 'claude-code' {
   interface PluginState {
-    'usage-band': { snapshot: Snapshot | null }
+    'usage-band': {
+      snapshot: Shaped<Snapshot | null>
+      isHidden: boolean
+      warned: Record<string, number>
+    }
   }
 }
