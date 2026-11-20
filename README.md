@@ -30,3 +30,25 @@ claude plugin install usage-band --marketplace PAOAO414/claude-mods
 ```
 
 Desktop App（`/plugin` 不能用時）：點輸入框旁的 + → Plugins → Add marketplace 填 `PAOAO414/claude-mods` → Add plugin。
+
+## claude-ai-usage-bar（一般對話頁面用）
+
+在 **電腦瀏覽器的 claude.ai 一般對話頁面** 右下角顯示用量列（Tampermonkey 腳本）：
+
+```
+5小時 剩 ███████░░░ 72.5% (2h14m 後重置)   7天 剩 █████████░ 91% (4d3h 後重置)   ×
+```
+
+- 每 60 秒、切回分頁時自動更新；點一下立即更新
+- 拖曳可移動位置（會記住），雙擊回到預設位置，× 隱藏到重新整理
+- 顏色規則同 usage-band：綠 > 30%、黃 10–30%、紅 ≤ 10%
+- 僅限電腦瀏覽器；Desktop App、手機 App 無法安裝腳本
+- 數據來自 claude.ai 網頁自己使用的內部 API（`/api/organizations/{id}/usage`），非公開介面，改版時可能失效
+
+### 安裝
+
+1. Chrome／Edge 安裝 [Tampermonkey](https://www.tampermonkey.net/) 擴充功能
+   （Chrome 需在擴充功能頁開啟「開發人員模式」，或在 Tampermonkey 詳細資料中允許使用者腳本）
+2. 用瀏覽器開啟下面網址，Tampermonkey 會跳出安裝畫面，按「安裝」：
+   `https://raw.githubusercontent.com/PAOAO414/claude-mods/main/claude-ai-usage-bar/usage-bar.user.js`
+3. 重新整理 claude.ai
