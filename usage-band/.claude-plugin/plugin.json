@@ -1,1 +1,1 @@
-{ "name": "usage-band", "version": "0.1.0", "description": "在輸入框上方顯示剩餘用量（5 小時／7 天限額）與 context 使用率", "types": "./types/index.d.ts" }
+{ "name": "usage-band", "version": "0.2.0", "description": "在輸入框上方顯示剩餘用量（5 小時／7 天限額）、context 使用率與花費", "types": "./types/index.d.ts" }
