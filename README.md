@@ -33,7 +33,7 @@ Desktop App（`/plugin` 不能用時）：點輸入框旁的 + → Plugins → A
 
 ## claude-ai-usage-bar（一般對話頁面用）
 
-在 **電腦瀏覽器的 claude.ai 一般對話頁面** 右下角顯示用量列（Tampermonkey 腳本）：
+在 **電腦瀏覽器的 claude.ai 一般對話頁面** 右下角固定顯示用量列（Tampermonkey 腳本）：
 
 ```
 5小時  剩  ███████░░░   72.5%  (2h14m  後重置)   ×
@@ -42,7 +42,7 @@ Desktop App（`/plugin` 不能用時）：點輸入框旁的 + → Plugins → A
 
 - 上下兩行，每一欄對齊
 - 每 60 秒、切回分頁時自動更新；點一下立即更新
-- 拖曳可移動位置（會記住），雙擊回到預設位置，× 隱藏到重新整理
+- 固定在畫面右下角，× 隱藏到重新整理
 - 顏色規則同 usage-band：綠 > 30%、黃 10–30%、紅 ≤ 10%
 - 僅限電腦瀏覽器；Desktop App、手機 App 無法安裝腳本
 - 數據來自 claude.ai 網頁自己使用的內部 API（`/api/organizations/{id}/usage`），非公開介面，改版時可能失效

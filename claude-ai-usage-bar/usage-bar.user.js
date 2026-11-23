@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Claude 用量列 (claude.ai)
 // @namespace    https://github.com/PAOAO414/claude-mods
-// @version      0.2.0
+// @version      0.3.0
 // @description  在 claude.ai 一般對話頁面顯示 5 小時／7 天限額的剩餘 %
 // @match        https://claude.ai/*
 // @run-at       document-idle
@@ -14,7 +14,7 @@
   'use strict';
 
   const REFRESH_MS = 60 * 1000;          // 每 60 秒更新一次
-  const POS_KEY = 'cub-usage-bar-pos';   // 拖曳後的位置存在 localStorage
+  const OLD_POS_KEY = 'cub-usage-bar-pos'; // v0.2 以前拖曳存的位置，啟動時清掉
   const BAR_ID = 'cub-usage-bar';
 
   // ---------- 資料 ----------
@@ -86,9 +86,9 @@
 
   // ---------- 畫面 ----------
   const css = `
-#${BAR_ID}{position:fixed;z-index:2147483000;bottom:6px;right:12px;
+#${BAR_ID}{position:fixed;z-index:2147483000;bottom:6px!important;right:12px!important;top:auto!important;left:auto!important;
   font:11px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-  padding:4px 10px;border-radius:8px;cursor:move;user-select:none;white-space:nowrap;
+  padding:4px 10px;border-radius:8px;cursor:pointer;user-select:none;white-space:nowrap;
   background:var(--cub-bg);color:var(--cub-fg);border:1px solid var(--cub-bd);
   box-shadow:0 1px 4px rgba(0,0,0,.12);
   display:grid;grid-template-columns:repeat(6,auto) 14px;column-gap:8px;row-gap:1px;align-items:center;
@@ -116,9 +116,11 @@
     }
     el = document.createElement('div');
     el.id = BAR_ID;
-    el.title = '點一下立即更新；拖曳可移動；× 隱藏到重新整理';
-    restorePos(el);
-    makeDraggable(el);
+    el.title = '點一下立即更新；× 隱藏到重新整理';
+    el.addEventListener('click', e => {
+      if (e.target.dataset.x) { hidden = true; el.remove(); return; }
+      refresh();
+    });
     document.body.appendChild(el);
     return el;
   }
@@ -162,55 +164,8 @@
     render(last);
   }
 
-  // ---------- 拖曳與位置 ----------
-  function restorePos(el) {
-    try {
-      const p = JSON.parse(localStorage.getItem(POS_KEY) || 'null');
-      if (p && typeof p.left === 'number') {
-        el.style.left = Math.min(p.left, innerWidth - 60) + 'px';
-        el.style.top = Math.min(p.top, innerHeight - 24) + 'px';
-        el.style.right = 'auto';
-        el.style.bottom = 'auto';
-      }
-    } catch (_) { /* localStorage 不可用就用預設位置 */ }
-  }
-
-  function makeDraggable(el) {
-    let sx, sy, ox, oy, moved = false;
-    el.addEventListener('mousedown', e => {
-      if (e.target.dataset.x) return;
-      const r = el.getBoundingClientRect();
-      sx = e.clientX; sy = e.clientY; ox = r.left; oy = r.top; moved = false;
-      const move = ev => {
-        const dx = ev.clientX - sx, dy = ev.clientY - sy;
-        if (Math.abs(dx) + Math.abs(dy) > 3) moved = true;
-        if (!moved) return;
-        el.style.left = Math.max(0, ox + dx) + 'px';
-        el.style.top = Math.max(0, oy + dy) + 'px';
-        el.style.right = 'auto'; el.style.bottom = 'auto';
-      };
-      const up = () => {
-        removeEventListener('mousemove', move);
-        removeEventListener('mouseup', up);
-        if (moved) {
-          const r2 = el.getBoundingClientRect();
-          try { localStorage.setItem(POS_KEY, JSON.stringify({ left: r2.left, top: r2.top })); } catch (_) {}
-        }
-      };
-      addEventListener('mousemove', move);
-      addEventListener('mouseup', up);
-    });
-    el.addEventListener('click', e => {
-      if (e.target.dataset.x) { hidden = true; el.remove(); return; }
-      if (!moved) refresh();
-    });
-    el.addEventListener('dblclick', () => {
-      try { localStorage.removeItem(POS_KEY); } catch (_) {}
-      el.style.left = el.style.top = ''; el.style.right = '12px'; el.style.bottom = '6px';
-    });
-  }
-
   // ---------- 啟動 ----------
+  try { localStorage.removeItem(OLD_POS_KEY); } catch (_) {}
   render({ data: null });
   refresh();
   setInterval(refresh, REFRESH_MS);
