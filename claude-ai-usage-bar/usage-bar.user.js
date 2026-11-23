@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Claude 用量列 (claude.ai)
 // @namespace    https://github.com/PAOAO414/claude-mods
-// @version      0.3.0
+// @version      0.4.0
 // @description  在 claude.ai 一般對話頁面顯示 5 小時／7 天限額的剩餘 %
 // @match        https://claude.ai/*
 // @run-at       document-idle
@@ -72,8 +72,9 @@
   }
 
   function bar(pct) {
-    const n = Math.round(pct / 10);
-    return '█'.repeat(n) + '░'.repeat(10 - n);
+    // 5 格，每格 20%；還有剩就至少顯示 1 格，避免 5% 看起來像 0
+    const n = pct > 0 ? Math.max(1, Math.round(pct / 20)) : 0;
+    return '█'.repeat(n) + '░'.repeat(5 - n);
   }
 
   function level(pct) {
@@ -81,7 +82,7 @@
   }
 
   function fmtPct(p) {
-    return p.toFixed(1) + '%';   // 固定一位小數，百分比欄寬度一致
+    return Math.round(p) + '%';
   }
 
   // ---------- 畫面 ----------
@@ -91,7 +92,7 @@
   padding:4px 10px;border-radius:8px;cursor:pointer;user-select:none;white-space:nowrap;
   background:var(--cub-bg);color:var(--cub-fg);border:1px solid var(--cub-bd);
   box-shadow:0 1px 4px rgba(0,0,0,.12);
-  display:grid;grid-template-columns:repeat(6,auto) 14px;column-gap:8px;row-gap:1px;align-items:center;
+  display:grid;grid-template-columns:repeat(4,auto) 14px;column-gap:8px;row-gap:1px;align-items:center;
   --cub-bg:#ffffffee;--cub-fg:#3d3d3a;--cub-bd:#e5e3dc;
   --cub-ok:#2f855a;--cub-warn:#b7791f;--cub-bad:#c53030;--cub-mute:#8a8a85}
 @media (prefers-color-scheme: dark){#${BAR_ID}{
@@ -100,8 +101,8 @@
 #${BAR_ID} .ok{color:var(--cub-ok)} #${BAR_ID} .warn{color:var(--cub-warn)}
 #${BAR_ID} .bad{color:var(--cub-bad)} #${BAR_ID} .mute{color:var(--cub-mute)}
 #${BAR_ID} .r{text-align:right;font-variant-numeric:tabular-nums}
-#${BAR_ID} .full{grid-column:1/7}
-#${BAR_ID} .x{grid-column:7;grid-row:1;cursor:pointer;color:var(--cub-mute);text-align:right}
+#${BAR_ID} .full{grid-column:1/5}
+#${BAR_ID} .x{grid-column:5;grid-row:1;cursor:pointer;color:var(--cub-mute);text-align:right}
 #${BAR_ID} .x:hover{color:var(--cub-fg)}
 `;
 
@@ -125,15 +126,12 @@
     return el;
   }
 
-  // 一行 = 6 格：標籤｜剩｜長條｜百分比(靠右)｜(倒數｜後重置)
-  // 用 CSS grid 排，上下兩行每一欄自動對齊，不受中英文字寬影響
+  // 一行 = 4 格：標籤｜長條｜百分比(靠右)｜重置倒數；CSS grid 讓上下兩行對齊
   function row(label, v) {
-    if (!v) return `<span>${label}</span><span class="mute full" style="grid-column:2/7">無資料</span>`;
+    if (!v) return `<span>${label}</span><span class="mute" style="grid-column:2/5">—</span>`;
     const lv = level(v.remain);
-    const t = fmtReset(v.resetsAt);
-    return `<span>${label}</span><span>剩</span>` +
-      `<span class="${lv}">${bar(v.remain)}</span><span class="${lv} r">${fmtPct(v.remain)}</span>` +
-      (t ? `<span class="mute">(${t}</span><span class="mute">後重置)</span>` : `<span></span><span></span>`);
+    return `<span>${label}</span><span class="${lv}">${bar(v.remain)}</span>` +
+      `<span class="${lv} r">${fmtPct(v.remain)}</span><span class="mute">${fmtReset(v.resetsAt)}</span>`;
   }
 
   let hidden = false;
@@ -148,7 +146,7 @@
     } else if (!state.data) {
       html = `<span class="mute full">用量讀取中…</span>`;
     } else {
-      html = row('5小時', state.data.five) + row('7天', state.data.seven);
+      html = row('5h', state.data.five) + row('7d', state.data.seven);
     }
     el.innerHTML = html + '<span class="x" data-x="1">×</span>';
   }
