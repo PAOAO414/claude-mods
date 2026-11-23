@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Claude 用量列 (claude.ai)
 // @namespace    https://github.com/PAOAO414/claude-mods
-// @version      0.4.0
+// @version      0.5.0
 // @description  在 claude.ai 一般對話頁面顯示 5 小時／7 天限額的剩餘 %
 // @match        https://claude.ai/*
 // @run-at       document-idle
@@ -72,9 +72,9 @@
   }
 
   function bar(pct) {
-    // 5 格，每格 20%；還有剩就至少顯示 1 格，避免 5% 看起來像 0
-    const n = pct > 0 ? Math.max(1, Math.round(pct / 20)) : 0;
-    return '█'.repeat(n) + '░'.repeat(5 - n);
+    // 10 格，每格 10%；還有剩就至少顯示 1 格，避免 3% 看起來像 0
+    const n = pct > 0 ? Math.max(1, Math.round(pct / 10)) : 0;
+    return '█'.repeat(n) + '░'.repeat(10 - n);
   }
 
   function level(pct) {
@@ -88,8 +88,8 @@
   // ---------- 畫面 ----------
   const css = `
 #${BAR_ID}{position:fixed;z-index:2147483000;bottom:6px!important;right:12px!important;top:auto!important;left:auto!important;
-  font:11px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-  padding:4px 10px;border-radius:8px;cursor:pointer;user-select:none;white-space:nowrap;
+  font:13px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  padding:6px 12px;border-radius:8px;cursor:pointer;user-select:none;white-space:nowrap;
   background:var(--cub-bg);color:var(--cub-fg);border:1px solid var(--cub-bd);
   box-shadow:0 1px 4px rgba(0,0,0,.12);
   display:grid;grid-template-columns:repeat(4,auto) 14px;column-gap:8px;row-gap:1px;align-items:center;
